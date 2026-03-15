@@ -9,10 +9,10 @@ const PROVIDERS = {
   },
   inception: {
     name: "Inception (Mercury)",
-    defaultModel: "mercury-coder-small",
+    defaultModel: "mercury-2",
     apiKeyHint: 'Get one at <a href="https://docs.inceptionlabs.ai" target="_blank">Inception Labs</a>',
-    modelHint: 'Models: <code>mercury-coder-small</code>, <code>mercury-2</code>. Built for speed — 1000+ tok/s.',
-    modelPlaceholder: "mercury-coder-small",
+    modelHint: '<code>mercury-2</code> for general text, <code>mercury-coder-small</code> for code. 1000+ tok/s.',
+    modelPlaceholder: "mercury-2",
     keyPlaceholder: "ina-..."
   },
   openai: {

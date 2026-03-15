@@ -18,7 +18,7 @@ const PROVIDERS = {
   inception: {
     name: "Inception (Mercury)",
     url: "https://api.inceptionlabs.ai/v1/chat/completions",
-    defaultModel: "mercury-coder-small",
+    defaultModel: "mercury-2",
     buildHeaders: (apiKey) => ({
       "Content-Type": "application/json",
       "Authorization": `Bearer ${apiKey}`
