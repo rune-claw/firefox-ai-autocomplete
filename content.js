@@ -41,7 +41,6 @@
   });
 
   document.addEventListener("focusout", (e) => {
-    // Small delay so clicking the ghost or other extension UI doesn't kill it
     setTimeout(() => {
       if (document.activeElement !== ghostEl) {
         clearGhost();
@@ -99,7 +98,6 @@
 
     const pageContext = settings.contextMode === "page" ? getPageContext() : null;
 
-    // Show loading state
     showGhostLoading();
 
     try {
@@ -122,7 +120,6 @@
         showGhost(response.completion);
       }
     } catch (err) {
-      // Extension context invalidated or other error
       console.error("[AI Autocomplete]", err);
     }
   }
@@ -176,27 +173,47 @@
   function updateGhostPosition() {
     if (!ghostEl || !activeElement) return;
 
+    const computed = getComputedStyle(activeElement);
+    syncGhostFont(computed);
+
     if (activeElement.tagName === "TEXTAREA" || activeElement.tagName === "INPUT") {
       const rect = activeElement.getBoundingClientRect();
       ghostEl.style.position = "fixed";
-      ghostEl.style.left = `${rect.left + 4}px`;
-      ghostEl.style.top = `${rect.top + getLineHeight(activeElement)}px`;
-      ghostEl.style.maxWidth = `${rect.width - 8}px`;
-      ghostEl.style.font = getComputedStyle(activeElement).font;
+      ghostEl.style.left = `${rect.left + parseFloat(computed.paddingLeft) + parseFloat(computed.borderLeftWidth)}px`;
+
+      // For single-line inputs, text is vertically centered — match it
+      const fontSize = parseFloat(computed.fontSize) || 14;
+      const paddingTop = parseFloat(computed.paddingTop) || 0;
+      const borderTop = parseFloat(computed.borderTopWidth) || 0;
+      const contentHeight = rect.height - borderTop - (parseFloat(computed.borderBottomWidth) || 0) - paddingTop - (parseFloat(computed.paddingBottom) || 0);
+      const verticalOffset = paddingTop + borderTop + Math.max(0, (contentHeight - fontSize) / 2);
+
+      ghostEl.style.top = `${rect.top + verticalOffset}px`;
+      ghostEl.style.maxWidth = `${rect.width - parseFloat(computed.paddingLeft) - parseFloat(computed.paddingRight) - 8}px`;
     } else if (activeElement.isContentEditable) {
-      // For contenteditable, try to position near the cursor
       const sel = window.getSelection();
       if (sel && sel.rangeCount > 0) {
         const range = sel.getRangeAt(0).cloneRange();
         range.collapse(true);
         const rect = range.getBoundingClientRect();
+        if (rect.top === 0 && rect.left === 0) return; // no visible cursor
         ghostEl.style.position = "fixed";
         ghostEl.style.left = `${rect.left}px`;
-        ghostEl.style.top = `${rect.top + 20}px`;
+        ghostEl.style.top = `${rect.top}px`;
         ghostEl.style.maxWidth = "400px";
-        ghostEl.style.font = getComputedStyle(activeElement).font;
       }
     }
+  }
+
+  function syncGhostFont(computed) {
+    if (!ghostEl) return;
+    ghostEl.style.fontFamily = computed.fontFamily;
+    ghostEl.style.fontSize = computed.fontSize;
+    ghostEl.style.fontWeight = computed.fontWeight;
+    ghostEl.style.fontStyle = computed.fontStyle;
+    ghostEl.style.letterSpacing = computed.letterSpacing;
+    ghostEl.style.lineHeight = computed.lineHeight;
+    ghostEl.style.textIndent = computed.textIndent;
   }
 
   function clearGhost() {
@@ -224,7 +241,6 @@
     currentCompletion = "";
     clearGhost();
 
-    // Re-trigger input event for frameworks that need it
     activeElement.dispatchEvent(new Event("input", { bubbles: true }));
   }
 
@@ -234,7 +250,7 @@
     if (!el) return false;
     const tag = el.tagName?.toLowerCase();
     if (tag === "textarea") return true;
-    if (tag === "input" && (!el.type || ["text", "search", "url", "email", "tel"].includes(el.type))) {
+    if (tag === "input" && (!el.type || ["text", "search", "url", "email", "tel", "number", "password"].includes(el.type))) {
       return true;
     }
     if (el.isContentEditable) return true;
@@ -257,18 +273,11 @@
   }
 
   function getPageContext() {
-    // Strip down to readable text, max ~3000 chars to keep costs sane
     const body = document.body?.cloneNode(true);
     if (!body) return "";
-    // Remove scripts, styles, hidden elements
     body.querySelectorAll("script, style, noscript, [hidden], .ai-autocomplete-ghost").forEach(el => el.remove());
     const text = body.innerText || body.textContent || "";
     return text.slice(0, 3000);
-  }
-
-  function getLineHeight(el) {
-    const style = getComputedStyle(el);
-    return parseInt(style.lineHeight) || parseInt(style.fontSize) * 1.2 || 20;
   }
 
   function escapeHtml(str) {

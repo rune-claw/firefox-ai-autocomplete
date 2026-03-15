@@ -29,6 +29,10 @@ BYOK AI-powered inline text completions for any text field on the web.
 - **Textbox** (default) — only sends what you've typed in the current field
 - **Full page** — sends page text too (more context, costs more per call)
 
+## System Prompt
+
+Customize the completion behavior in Settings → System Prompt. Leave empty for the default, or write your own to control tone, style, and output format.
+
 ## Models
 
 Use any model on [OpenRouter](https://openrouter.ai/models). Recommended for completions:

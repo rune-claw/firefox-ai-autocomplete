@@ -5,8 +5,21 @@ const DEFAULTS = {
   debounceMs: 400,
   maxTokens: 150,
   temperature: 0.3,
-  enabled: true
+  enabled: true,
+  systemPrompt: ""
 };
+
+const DEFAULT_SYSTEM_PROMPT = `You are an inline text autocomplete engine. Given the text the user has typed so far, predict what they would type next.
+
+Rules:
+- Output ONLY the continuation text, nothing else.
+- Keep suggestions short: 1-2 sentences max.
+- Match the tone and style of the existing text.
+- If the text appears to be code, suggest code completions.
+- If the text appears to be natural language, suggest natural language completions.
+- Do not repeat what the user has already written.
+- Do not wrap your response in quotes or add explanations.
+- Never add a closing quote unless the user text started with an unmatched opening quote.`;
 
 document.addEventListener("DOMContentLoaded", async () => {
   const settings = await browser.storage.local.get(DEFAULTS);
@@ -17,6 +30,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("debounceMs").value = settings.debounceMs;
   document.getElementById("maxTokens").value = settings.maxTokens;
   document.getElementById("temperature").value = settings.temperature;
+  document.getElementById("systemPrompt").value = settings.systemPrompt;
 
   const form = document.getElementById("settings");
   const savedMsg = document.getElementById("savedMsg");
@@ -31,6 +45,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       debounceMs: parseInt(document.getElementById("debounceMs").value) || DEFAULTS.debounceMs,
       maxTokens: parseInt(document.getElementById("maxTokens").value) || DEFAULTS.maxTokens,
       temperature: parseFloat(document.getElementById("temperature").value) || DEFAULTS.temperature,
+      systemPrompt: document.getElementById("systemPrompt").value.trim(),
       enabled: true
     });
 
@@ -45,5 +60,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("debounceMs").value = DEFAULTS.debounceMs;
     document.getElementById("maxTokens").value = DEFAULTS.maxTokens;
     document.getElementById("temperature").value = DEFAULTS.temperature;
+    document.getElementById("systemPrompt").value = "";
+  });
+
+  document.getElementById("resetPromptBtn").addEventListener("click", () => {
+    document.getElementById("systemPrompt").value = "";
   });
 });
