@@ -99,15 +99,31 @@
 
   <form id="settings">
     <div class="field">
-      <label for="apiKey">OpenRouter API Key</label>
+      <label for="provider">Provider</label>
+      <select id="provider">
+        <option value="openrouter">OpenRouter</option>
+        <option value="inception">Inception (Mercury)</option>
+        <option value="openai">OpenAI</option>
+        <option value="custom">Custom (OpenAI-compatible)</option>
+      </select>
+    </div>
+
+    <div class="field" id="customUrlField" style="display: none;">
+      <label for="customUrl">API Endpoint URL</label>
+      <input type="text" id="customUrl" placeholder="https://your-api.com/v1/chat/completions" autocomplete="off" spellcheck="false">
+      <div class="hint">Must be OpenAI-compatible chat completions endpoint.</div>
+    </div>
+
+    <div class="field">
+      <label for="apiKey">API Key</label>
       <input type="text" id="apiKey" placeholder="sk-or-v1-..." autocomplete="off" spellcheck="false">
-      <div class="hint">Get one at <a href="https://openrouter.ai/keys" target="_blank">openrouter.ai/keys</a></div>
+      <div class="hint" id="apiKeyHint">Get one at <a href="https://openrouter.ai/keys" target="_blank">openrouter.ai/keys</a></div>
     </div>
 
     <div class="field">
       <label for="model">Model</label>
       <input type="text" id="model" placeholder="google/gemini-2.0-flash-001">
-      <div class="hint">Any model on <a href="https://openrouter.ai/models" target="_blank">OpenRouter</a>. Cheaper/faster = better for completions.</div>
+      <div class="hint" id="modelHint">Any model on <a href="https://openrouter.ai/models" target="_blank">OpenRouter</a>. Cheaper/faster = better for completions.</div>
     </div>
 
     <div class="field">

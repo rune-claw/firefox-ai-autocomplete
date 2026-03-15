@@ -1,10 +1,49 @@
 /**
- * background.js — Handles OpenRouter API calls.
+ * background.js — Handles API calls to multiple providers.
  * Content script sends messages here; we return completions.
  */
 
-const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
-const DEFAULT_MODEL = "google/gemini-2.0-flash-001";
+const PROVIDERS = {
+  openrouter: {
+    name: "OpenRouter",
+    url: "https://openrouter.ai/api/v1/chat/completions",
+    defaultModel: "google/gemini-2.0-flash-001",
+    buildHeaders: (apiKey) => ({
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${apiKey}`,
+      "HTTP-Referer": "https://github.com/rune-claw/firefox-ai-autocomplete",
+      "X-Title": "AI Text Autocomplete"
+    })
+  },
+  inception: {
+    name: "Inception (Mercury)",
+    url: "https://api.inceptionlabs.ai/v1/chat/completions",
+    defaultModel: "mercury-coder-small",
+    buildHeaders: (apiKey) => ({
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${apiKey}`
+    })
+  },
+  openai: {
+    name: "OpenAI",
+    url: "https://api.openai.com/v1/chat/completions",
+    defaultModel: "gpt-4o-mini",
+    buildHeaders: (apiKey) => ({
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${apiKey}`
+    })
+  },
+  custom: {
+    name: "Custom (OpenAI-compatible)",
+    url: "",
+    defaultModel: "",
+    buildHeaders: (apiKey) => ({
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${apiKey}`
+    })
+  }
+};
+
 const DEFAULT_SYSTEM_PROMPT = `You are an inline text autocomplete engine. Given the text the user has typed so far, predict what they would type next.
 
 Rules:
@@ -35,23 +74,30 @@ async function handleComplete({ text, pageContext, contextMode }) {
 
   try {
     const settings = await getSettings();
+    const provider = PROVIDERS[settings.provider] || PROVIDERS.openrouter;
 
     if (!settings.apiKey) {
-      return { error: "No API key configured. Open settings to add your OpenRouter key." };
+      return { error: `No API key configured. Open settings to add your ${provider.name} key.` };
+    }
+
+    const url = settings.provider === "custom" ? settings.customUrl : provider.url;
+    if (!url) {
+      return { error: "No API endpoint configured. Set a custom URL in settings." };
     }
 
     const messages = buildMessages(text, pageContext, contextMode, settings.systemPrompt);
 
-    const response = await fetch(OPENROUTER_URL, {
+    const headers = provider.buildHeaders(settings.apiKey);
+
+    // Some providers (OpenRouter) use the model string as-is;
+    // Inception models may need prefix stripping
+    const model = settings.model || provider.defaultModel;
+
+    const response = await fetch(url, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${settings.apiKey}`,
-        "HTTP-Referer": "https://github.com/rune-claw/firefox-ai-autocomplete",
-        "X-Title": "AI Text Autocomplete"
-      },
+      headers,
       body: JSON.stringify({
-        model: settings.model || DEFAULT_MODEL,
+        model,
         messages,
         max_tokens: settings.maxTokens || 150,
         temperature: settings.temperature ?? 0.3,
@@ -77,13 +123,11 @@ async function handleComplete({ text, pageContext, contextMode }) {
 
     const data = await response.json();
 
-    // Debug log — check about:debugging > Inspect > Console if issues persist
     console.log("[AI Autocomplete] Response:", JSON.stringify(data).slice(0, 500));
 
     const completion = data.choices?.[0]?.message?.content?.trim();
 
     if (!completion) {
-      // More specific error based on what we got back
       if (data.error) {
         return { error: data.error?.message || JSON.stringify(data.error).slice(0, 100) };
       }
@@ -127,8 +171,10 @@ function buildMessages(text, pageContext, contextMode, customPrompt) {
 
 async function getSettings() {
   const defaults = {
+    provider: "openrouter",
     apiKey: "",
-    model: DEFAULT_MODEL,
+    customUrl: "",
+    model: "",
     contextMode: "textbox",
     maxTokens: 150,
     temperature: 0.3,

@@ -13,9 +13,16 @@ BYOK AI-powered inline text completions for any text field on the web.
 
 1. Click the extension icon in the toolbar
 2. Click "Settings"
-3. Paste your [OpenRouter API key](https://openrouter.ai/keys)
-4. Pick a model (defaults to Gemini 2.0 Flash — cheap and fast)
-5. Save
+3. Pick your provider and enter your API key:
+
+| Provider | Key | Models |
+|----------|-----|--------|
+| **OpenRouter** | [openrouter.ai/keys](https://openrouter.ai/keys) | Any model on OpenRouter (default: Gemini 2.0 Flash) |
+| **Inception (Mercury)** | [inceptionlabs.ai](https://docs.inceptionlabs.ai) | `mercury-coder-small`, `mercury-2` — 1000+ tok/s diffusion LLM |
+| **OpenAI** | [platform.openai.com](https://platform.openai.com/api-keys) | `gpt-4o-mini`, `gpt-4o`, etc. |
+| **Custom** | Your own | Any OpenAI-compatible `/v1/chat/completions` endpoint |
+
+4. Save
 
 ## Usage
 
