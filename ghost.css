@@ -60,6 +60,21 @@
   font-style: normal;
 }
 
+.ai-autocomplete-edit-badge {
+  font-size: 0.6em;
+  color: #ff9800;
+  background: rgba(255, 152, 0, 0.1);
+  padding: 1px 4px;
+  border-radius: 2px;
+  border: 1px solid rgba(255, 152, 0, 0.3);
+  flex-shrink: 0;
+  align-self: center;
+  font-style: normal;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
 @keyframes ai-autocomplete-pulse {
   0%, 100% { opacity: 0.4; }
   50% { opacity: 0.8; }

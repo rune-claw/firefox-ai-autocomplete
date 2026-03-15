@@ -60,7 +60,9 @@ Rules:
 - If the text appears to be natural language, suggest natural language completions.
 - Do not repeat what the user has already written.
 - Do not wrap your response in quotes or add explanations.
-- Never add a closing quote unless the user text started with an unmatched opening quote.`;
+- Never add a closing quote unless the user text started with an unmatched opening quote.
+- If the user's text contains a typo, grammatical error, or could be improved, output the FULL corrected/improved text with a <|cursor|> marker at the end position (where the cursor should be after applying). This allows the editor to replace the entire text and position the cursor correctly.
+- For simple continuations, just output the text to append (no cursor marker needed).`;
 
 let abortController = null;
 
