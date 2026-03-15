@@ -10,35 +10,49 @@
       margin: 40px auto;
       padding: 0 20px;
       font-family: system-ui, -apple-system, sans-serif;
-      color: #333;
+      color: #e0e0e0;
+      background: #1a1a2e;
       line-height: 1.5;
     }
-    h1 { font-size: 22px; margin-bottom: 4px; }
-    .subtitle { color: #666; font-size: 13px; margin-bottom: 24px; }
+    h1 { font-size: 22px; margin-bottom: 4px; color: #fff; }
+    .subtitle { color: #888; font-size: 13px; margin-bottom: 24px; }
     .field { margin-bottom: 16px; }
     label {
       display: block;
       font-weight: 600;
       margin-bottom: 4px;
       font-size: 13px;
+      color: #ccc;
     }
-    .hint { font-size: 12px; color: #888; margin-top: 2px; }
+    .hint { font-size: 12px; color: #666; margin-top: 2px; }
+    .hint a { color: #6b9fff; }
     input[type="text"], input[type="number"], select, textarea {
       width: 100%;
       padding: 8px 10px;
-      border: 1px solid #ccc;
+      border: 1px solid #333;
       border-radius: 4px;
       font-size: 14px;
       font-family: inherit;
+      background: #16213e;
+      color: #e0e0e0;
     }
     textarea {
       resize: vertical;
       min-height: 80px;
+      font-family: monospace;
+      font-size: 13px;
     }
-    input:focus, select:focus {
+    input::placeholder, textarea::placeholder {
+      color: #555;
+    }
+    input:focus, select:focus, textarea:focus {
       outline: none;
-      border-color: #1a73e8;
-      box-shadow: 0 0 0 2px rgba(26,115,232,0.2);
+      border-color: #6b9fff;
+      box-shadow: 0 0 0 2px rgba(107,159,255,0.2);
+    }
+    select option {
+      background: #16213e;
+      color: #e0e0e0;
     }
     .actions {
       display: flex;
@@ -53,17 +67,18 @@
       cursor: pointer;
     }
     .btn-primary {
-      background: #1a73e8;
-      color: white;
+      background: #6b9fff;
+      color: #111;
+      font-weight: 600;
     }
-    .btn-primary:hover { background: #1557b0; }
+    .btn-primary:hover { background: #8bb4ff; }
     .btn-secondary {
-      background: #e8eaed;
-      color: #333;
+      background: #2a2a4a;
+      color: #ccc;
     }
-    .btn-secondary:hover { background: #dadce0; }
+    .btn-secondary:hover { background: #3a3a5a; }
     .saved {
-      color: #2e7d32;
+      color: #4caf50;
       font-size: 13px;
       margin-left: 8px;
       opacity: 0;
@@ -71,11 +86,11 @@
     }
     .saved.show { opacity: 1; }
     .section {
-      border-top: 1px solid #eee;
+      border-top: 1px solid #2a2a4a;
       padding-top: 16px;
       margin-top: 24px;
     }
-    .section h2 { font-size: 16px; margin-bottom: 12px; }
+    .section h2 { font-size: 16px; margin-bottom: 12px; color: #ddd; }
   </style>
 </head>
 <body>
