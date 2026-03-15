@@ -1,0 +1,66 @@
+/**
+ * ghost.css — Ghost text overlay styling
+ */
+
+.ai-autocomplete-ghost {
+  position: fixed;
+  pointer-events: none;
+  z-index: 2147483647;
+  display: none;
+  padding: 2px 4px;
+  border-radius: 3px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.ai-autocomplete-visible {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  opacity: 1;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.ai-autocomplete-fading {
+  opacity: 0.5;
+}
+
+.ai-autocomplete-text {
+  color: #888;
+  font-style: italic;
+  opacity: 0.7;
+  /* Try to blend with the input's text */
+  font: inherit;
+}
+
+.ai-autocomplete-loading {
+  font-style: italic;
+  animation: ai-autocomplete-pulse 1s ease-in-out infinite;
+}
+
+.ai-autocomplete-error {
+  color: #e55;
+  font-style: normal;
+  font-size: 0.85em;
+}
+
+.ai-autocomplete-hint {
+  font-size: 0.7em;
+  color: #aaa;
+  background: rgba(0, 0, 0, 0.06);
+  padding: 1px 5px;
+  border-radius: 3px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+  align-self: center;
+  font-style: normal;
+}
+
+@keyframes ai-autocomplete-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
