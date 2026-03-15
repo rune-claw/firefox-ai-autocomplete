@@ -152,6 +152,18 @@
       <div class="hint">0 = deterministic, 1 = creative. Lower is better for completions.</div>
     </div>
 
+    <div class="field">
+      <label for="reasoningEffort">Reasoning Effort</label>
+      <select id="reasoningEffort">
+        <option value="none">None — fastest, no thinking</option>
+        <option value="minimal">Minimal — near-instant</option>
+        <option value="low" selected>Low — fast, some thinking</option>
+        <option value="medium">Medium</option>
+        <option value="high">High — slowest, most thorough</option>
+      </select>
+      <div class="hint">Controls reasoning models (o1, o3, Gemini thinking, etc.). Lower = faster completions. Non-reasoning models ignore this.</div>
+    </div>
+
     <div class="section">
       <h2>System Prompt</h2>
       <p class="hint" style="margin-bottom: 8px;">Customize how the model generates completions. Leave empty for the default prompt.</p>

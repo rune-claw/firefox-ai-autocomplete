@@ -8,6 +8,8 @@ const PROVIDERS = {
     name: "OpenRouter",
     url: "https://openrouter.ai/api/v1/chat/completions",
     defaultModel: "google/gemini-2.0-flash-001",
+    // OpenRouter uses nested reasoning.effort
+    reasoningFormat: "nested",
     buildHeaders: (apiKey) => ({
       "Content-Type": "application/json",
       "Authorization": `Bearer ${apiKey}`,
@@ -19,6 +21,8 @@ const PROVIDERS = {
     name: "Inception (Mercury)",
     url: "https://api.inceptionlabs.ai/v1/chat/completions",
     defaultModel: "mercury-2",
+    // Inception uses top-level reasoning_effort (OpenAI-style)
+    reasoningFormat: "topLevel",
     buildHeaders: (apiKey) => ({
       "Content-Type": "application/json",
       "Authorization": `Bearer ${apiKey}`
@@ -28,6 +32,7 @@ const PROVIDERS = {
     name: "OpenAI",
     url: "https://api.openai.com/v1/chat/completions",
     defaultModel: "gpt-4o-mini",
+    reasoningFormat: "topLevel",
     buildHeaders: (apiKey) => ({
       "Content-Type": "application/json",
       "Authorization": `Bearer ${apiKey}`
@@ -37,6 +42,7 @@ const PROVIDERS = {
     name: "Custom (OpenAI-compatible)",
     url: "",
     defaultModel: "",
+    reasoningFormat: "topLevel",
     buildHeaders: (apiKey) => ({
       "Content-Type": "application/json",
       "Authorization": `Bearer ${apiKey}`
@@ -86,24 +92,35 @@ async function handleComplete({ text, pageContext, contextMode }) {
     }
 
     const messages = buildMessages(text, pageContext, contextMode, settings.systemPrompt);
-
     const headers = provider.buildHeaders(settings.apiKey);
-
-    // Some providers (OpenRouter) use the model string as-is;
-    // Inception models may need prefix stripping
     const model = settings.model || provider.defaultModel;
+
+    // Build request body
+    const body = {
+      model,
+      messages,
+      max_tokens: settings.maxTokens || 150,
+      temperature: settings.temperature ?? 0.3,
+      stop: ["\n\n", "</s>"],
+      stream: false
+    };
+
+    // Add reasoning effort based on provider format
+    const effort = settings.reasoningEffort || "low";
+    if (effort !== "none") {
+      if (provider.reasoningFormat === "nested") {
+        // OpenRouter format: { reasoning: { effort: "low" } }
+        body.reasoning = { effort };
+      } else {
+        // OpenAI/Inception format: { reasoning_effort: "low" }
+        body.reasoning_effort = effort;
+      }
+    }
 
     const response = await fetch(url, {
       method: "POST",
       headers,
-      body: JSON.stringify({
-        model,
-        messages,
-        max_tokens: settings.maxTokens || 150,
-        temperature: settings.temperature ?? 0.3,
-        stop: ["\n\n", "</s>"],
-        stream: false
-      }),
+      body: JSON.stringify(body),
       signal: abortController.signal
     });
 
@@ -178,6 +195,7 @@ async function getSettings() {
     contextMode: "textbox",
     maxTokens: 150,
     temperature: 0.3,
+    reasoningEffort: "low",
     debounceMs: 400,
     shortcutKey: "Tab",
     enabled: true,

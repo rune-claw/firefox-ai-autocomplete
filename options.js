@@ -42,6 +42,7 @@ const DEFAULTS = {
   debounceMs: 400,
   maxTokens: 150,
   temperature: 0.3,
+  reasoningEffort: "low",
   enabled: true,
   systemPrompt: ""
 };
@@ -68,6 +69,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("debounceMs").value = settings.debounceMs;
   document.getElementById("maxTokens").value = settings.maxTokens;
   document.getElementById("temperature").value = settings.temperature;
+  document.getElementById("reasoningEffort").value = settings.reasoningEffort;
   document.getElementById("systemPrompt").value = settings.systemPrompt;
 
   updateProviderUI(settings.provider);
@@ -94,6 +96,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       debounceMs: parseInt(document.getElementById("debounceMs").value) || DEFAULTS.debounceMs,
       maxTokens: parseInt(document.getElementById("maxTokens").value) || DEFAULTS.maxTokens,
       temperature: parseFloat(document.getElementById("temperature").value) || DEFAULTS.temperature,
+      reasoningEffort: document.getElementById("reasoningEffort").value,
       systemPrompt: document.getElementById("systemPrompt").value.trim(),
       enabled: true
     });
@@ -111,6 +114,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("debounceMs").value = DEFAULTS.debounceMs;
     document.getElementById("maxTokens").value = DEFAULTS.maxTokens;
     document.getElementById("temperature").value = DEFAULTS.temperature;
+    document.getElementById("reasoningEffort").value = DEFAULTS.reasoningEffort;
     document.getElementById("systemPrompt").value = "";
     updateProviderUI(DEFAULTS.provider);
   });
