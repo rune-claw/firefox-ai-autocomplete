@@ -33,6 +33,20 @@ const PROVIDERS = {
   }
 };
 
+const DEFAULT_SYSTEM_PROMPT = `You are an inline text autocomplete engine. Given the text the user has typed so far, predict what they would type next.
+
+Rules:
+- Output ONLY the continuation text, nothing else.
+- Keep suggestions short: 1-2 sentences max.
+- Match the tone and style of the existing text.
+- If the text appears to be code, suggest code completions.
+- If the text appears to be natural language, suggest natural language completions.
+- Do not repeat what the user has already written.
+- Do not wrap your response in quotes or add explanations.
+- Never add a closing quote unless the user text started with an unmatched opening quote.
+- If the user's text contains a typo, grammatical error, or could be improved, output the FULL corrected/improved text with a <|cursor|> marker at the end position (where the cursor should be after applying). This allows the editor to replace the entire text and position the cursor correctly.
+- For simple continuations, just output the text to append (no cursor marker needed).`;
+
 const DEFAULTS = {
   provider: "openrouter",
   apiKey: "",
@@ -70,7 +84,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("maxTokens").value = settings.maxTokens;
   document.getElementById("temperature").value = settings.temperature;
   document.getElementById("reasoningEffort").value = settings.reasoningEffort;
-  document.getElementById("systemPrompt").value = settings.systemPrompt;
+  document.getElementById("systemPrompt").value = settings.systemPrompt || DEFAULT_SYSTEM_PROMPT;
 
   updateProviderUI(settings.provider);
 
@@ -115,11 +129,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("maxTokens").value = DEFAULTS.maxTokens;
     document.getElementById("temperature").value = DEFAULTS.temperature;
     document.getElementById("reasoningEffort").value = DEFAULTS.reasoningEffort;
-    document.getElementById("systemPrompt").value = "";
+    document.getElementById("systemPrompt").value = DEFAULT_SYSTEM_PROMPT;
     updateProviderUI(DEFAULTS.provider);
   });
 
   document.getElementById("resetPromptBtn").addEventListener("click", () => {
-    document.getElementById("systemPrompt").value = "";
+    document.getElementById("systemPrompt").value = DEFAULT_SYSTEM_PROMPT;
   });
 });
